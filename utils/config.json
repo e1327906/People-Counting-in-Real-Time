@@ -8,5 +8,6 @@
     "Thread": false,
     "Log": true,
     "Scheduler": false,
-    "Timer": false
+    "Timer": false,
+    "HorizontalLine": false
 }

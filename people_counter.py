@@ -219,10 +219,16 @@ def people_counter():
 					# add the bounding box coordinates to the rectangles list
 					rects.append((startX, startY, endX, endY))
 
-		# draw a horizontal line in the center of the frame -- once an
+		# draw a vertical line in the center of the frame -- once an
 		# object crosses this line we will determine whether they were
-		# moving 'up' or 'down'
-		cv2.line(frame, (0, H // 2), (W, H // 2), (0, 0, 0), 3)
+
+		if config["HorizontalLine"]:
+			# moving 'up' or 'down'		
+			cv2.line(frame, (0, H // 2), (W, H // 2), (0, 0, 0), 3)
+		else:
+			# moving 'left' or 'right'
+			cv2.line(frame, (W // 2, 0), (W // 2, H), (0, 0, 0), 3)
+			
 		cv2.putText(frame, "-Prediction border - Entrance-", (10, H - ((i * 20) + 200)),
 			cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
 
