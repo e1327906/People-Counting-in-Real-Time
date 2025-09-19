@@ -1,0 +1,19 @@
+[project]
+
+name = "people-counting-in-real-time"
+version = "0.1.0"
+description = "Real-time people counting using computer vision"
+authors = ["Your Name <your.email@example.com>"]
+requires-python = ">=3.9"
+dependencies = [
+	"schedule==1.1.0",
+	"numpy>=1.25.0",
+	"argparse==1.4.0",
+	"imutils==0.5.4",
+	"opencv-contrib-python>=4.8.0",
+	"scipy==1.10.1",
+	"cmake"
+]
+
+[tool.uv]
+# Optional: uv-specific settings can go here

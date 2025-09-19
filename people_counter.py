@@ -13,7 +13,6 @@ import schedule
 import logging
 import imutils
 import time
-import dlib
 import json
 import csv
 import cv2
@@ -188,12 +187,11 @@ def people_counter():
 					box = detections[0, 0, i, 3:7] * np.array([W, H, W, H])
 					(startX, startY, endX, endY) = box.astype("int")
 
-					# construct a dlib rectangle object from the bounding
-					# box coordinates and then start the dlib correlation
-					# tracker
-					tracker = dlib.correlation_tracker()
-					rect = dlib.rectangle(startX, startY, endX, endY)
-					tracker.start_track(rgb, rect)
+					# construct an OpenCV CSRT tracker object from the bounding
+					# box coordinates and then start the tracker
+					tracker = cv2.TrackerCSRT_create()
+					rect = (startX, startY, endX - startX, endY - startY)
+					tracker.init(rgb, rect)
 
 					# add the tracker to our list of trackers so we can
 					# utilize it during skip frames
@@ -209,17 +207,17 @@ def people_counter():
 				status = "Tracking"
 
 				# update the tracker and grab the updated position
-				tracker.update(rgb)
-				pos = tracker.get_position()
+				success, box = tracker.update(rgb)
+				
+				if success:
+					# unpack the position object
+					startX = int(box[0])
+					startY = int(box[1])
+					endX = int(box[0] + box[2])
+					endY = int(box[1] + box[3])
 
-				# unpack the position object
-				startX = int(pos.left())
-				startY = int(pos.top())
-				endX = int(pos.right())
-				endY = int(pos.bottom())
-
-				# add the bounding box coordinates to the rectangles list
-				rects.append((startX, startY, endX, endY))
+					# add the bounding box coordinates to the rectangles list
+					rects.append((startX, startY, endX, endY))
 
 		# draw a horizontal line in the center of the frame -- once an
 		# object crosses this line we will determine whether they were
@@ -358,10 +356,11 @@ def people_counter():
 	cv2.destroyAllWindows()
 
 # initiate the scheduler
-if config["Scheduler"]:
-	# runs at every day (09:00 am)
-	schedule.every().day.at("09:00").do(people_counter)
-	while True:
-		schedule.run_pending()
-else:
-	people_counter()
+if __name__ == "__main__":
+	if config["Scheduler"]:
+		# runs at every day (09:00 am)
+		schedule.every().day.at("09:00").do(people_counter)
+		while True:
+			schedule.run_pending()
+	else:
+		people_counter()
